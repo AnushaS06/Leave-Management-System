@@ -1,6 +1,6 @@
 <?php
 
-$mysqli = new mysqli("localhost", "root", "anusha@123", "leave_management");
+$mysqli = new mysqli("localhost", "username", "password", "database_name");
 $id = strval($_GET['id']);
 $applied_id = strval($_GET['applied_id']);
 $status = strval($_GET['status']);
