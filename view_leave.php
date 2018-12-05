@@ -1,5 +1,5 @@
 <?php
-$mysqli = new mysqli("localhost", "root", "anusha@123", "leave_management");
+$mysqli = new mysqli("localhost", "username", "password", "database_name");
 $id = strval($_GET['id']);
 $result = $mysqli->query("SELECT lm.type,ela.no_of_days,ela.updated_date,ela.status,ela.from_date,ela.to_date
                          FROM employee_leave_applied ela,leave_master lm 
