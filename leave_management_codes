@@ -1,0 +1,85 @@
+<--- create tables --->
+
+create table employee_master
+(
+	emp_id char(10) primary key,
+	emp_fname varchar(50),
+	emp_lname varchar(50),
+	emp_desig varchar(50),
+	mgr_id char(10) references employee_master(emp_id) on delete cascade,
+	dob date,
+	doj date,
+	login_name varchar(50),
+	password varchar(25),
+);
+
+create table leave_master
+(
+	type_id int primary key auto_increment,
+	type varchar(50),
+	no_of_days int,
+);
+
+create table employee_leave_applied
+(
+	leave_applied_id int primary key auto_increment,
+	type_id int references leave_master(type_id),
+	emp_id char(10) references employee_master(emp_id),
+	from_date date,
+	to_date date,
+	no_of_days int,
+	status varchar(20),
+	updated_date date
+); 
+
+create table employee_leave_availability
+(
+	leave_available_id int primary key auto_increment,
+	emp_id char(10) references employee_master(emp_id),
+	type_id int references leave_master(type_id),
+	days_available int
+);
+
+create table employee_leave_audit_trail
+(
+	leave_applied_id int,
+	type_id int,
+	emp_id char(10),
+	from_date date,
+	to_date date,
+	no_of_days int,
+	status varchar(20),
+	updated_date date
+); 
+
+<--- insert data --->
+
+insert into leave_master (type,no_of_days) values('cl',12); 
+insert into leave_master (type,no_of_days) values('pl',30); 
+insert into leave_master (type,no_of_days) values('sl',10);
+ 
+
+insert into employee_master values('1RN16CS001','Admin',null,'Admin',null,'1971-03-01','2001-01-01','admin@rnsit.com','password');
+insert into employee_master values('1RN16CS002','HOD',null,'HOD','1RN16CS001','1974-03-03','2003-01-01','hod@rnsit.com','password');
+insert into employee_master values('1RN16CS003','Senior','faculty1','professor','1RN16CS002','1975-04-05','2004-01-01','sfaculty1@rnsit.com','password');
+insert into employee_master values('1RN16CS004','Senior','faculty2','professor','1RN16CS002','1975-03-01','2004-01-14','sfaculty2@rnsit.com','password');
+insert into employee_master values('1RN16CS005','Assosiate','professor1','lecturer','1RN16CS003','1977-10-10','2005-10-01','lecturer1@rnsit.com','password');
+insert into employee_master values('1RN16CS006','Assosiate','professor2','lecturer','1RN16CS003','1978-09-12','2005-08-10','lecturer2@rnsit.com','password');
+insert into employee_master values('1RN16CS007','Assosiate','professor3','lecturer','1RN16CS004','1978-10-12','2005-12-01','lecturer3@rnsit.com','password');
+insert into employee_master values('1RN16CS008','Assosiate','professor4','lecturer','1RN16CS004','1977-10-09','2005-08-12','lecturer4@rnsit.com','password');
+
+insert into employee_leave_availability (emp_id,type_id,days_available) select emp_id,type,no_of_days from employee_master,leave_master;
+
+<--- trigger --->
+
+DELIMITER $$
+create trigger before_emp_update
+BEFORE
+UPDATE
+on employee_leave_applied
+for each row 
+begin
+	insert into employee_leave_audit_trail 	values (OLD.leave_applied_id,OLD.type_id,OLD.emp_id,
+	OLD.from_date,OLD.to_date,OLD.no_of_days,OLD.status,OLD.updated_date);
+END$$
+DELIMITER ;
