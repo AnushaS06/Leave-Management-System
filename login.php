@@ -1,5 +1,5 @@
 <?php
-$mysqli = new mysqli("localhost", "root", "anusha@123", "leave_management");
+$mysqli = new mysqli("localhost", "username", "password", "database_name");
 $u = strval($_GET['u']);
 $p = strval($_GET['p']);
 $result = $mysqli->query("SELECT emp_id,emp_fname,emp_lname,emp_desig,dob,doj
